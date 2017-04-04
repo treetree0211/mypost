@@ -1,0 +1,63 @@
+{{extend 'layout.html'}}
+
+<html>
+    <link href='http://fonts.googleapis.com/css?family=Changa+One|Open+Sans:400italic,700italic,400,700,800' rel='stylesheet' type='text/css'>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="{{=URL('static', 'css/main.css')}}" rel="stylesheet" type="text/css" />
+<head>
+</head>
+
+{{if auth.user_id:}}
+
+<div class="clearfix">
+    <div class="login">
+           <a href="{{=URL('default', 'edit')}}" id="new-post">+ New Post</a>
+    </div>
+</div>
+
+{{else:}}
+
+{{pass}}
+
+<div id="container">
+
+    {{index = 1}}
+    <form><input type="hidden" id="id" name="id" value="" /></form>
+
+    {{for row in rows:}}
+
+    <div class="post clearfix">
+        <p class="post-title">Post {{=index}}&nbsp{{=row.post_subject}}</p>
+        <p class="post-content">{{=row.post_content}}</p>
+
+        <div class="post-footer">
+            <span class="post-footer-content">{{=row.user_id.first_name}}&nbsp{{=row.user_id.last_name}}</span>
+            <span class="post-footer-content">{{=row.created_on}}</span>
+
+            {{ if row.updated_on != row.created_on: }}
+                  <span class="post-footer-content">Edited on {{=row.updated_on}}</span>
+            {{ pass }}
+            <p>
+            <span onclick="jQuery('#id').val('{{=row.id}}');
+                   ajax('{{=URL('default', 'votes_up')}}', ['id'], 'up{{=row.id}}');"><i class="fa fa-thumbs-up fa-2x" aria-hidden="true"></i></span><span id="up{{=row.id}}">{{=row.votes_up}}</span>
+            &nbsp;&nbsp;&nbsp;
+           <span onclick="jQuery('#id').val('{{=row.id}}');
+                  ajax('{{=URL('default', 'votes_down')}}', ['id'], 'down{{=row.id}}');"><i class="fa fa-thumbs-down fa-2x" aria-hidden="true"></i></span><span id="down{{=row.id}}">{{=row.votes_down}}</span>
+            </p>
+
+        </div>
+
+        {{if row.user_id == auth.user_id:}}
+            <div class="post-buttons">
+               <a href="{{=URL('default', 'edit', args=[row.id])}}">edit</a>
+            </div>
+        {{pass}}
+
+        {{index = index + 1}}
+    </div>
+
+   {{pass}}
+
+</div>
+
+</html>
